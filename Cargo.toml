@@ -1,0 +1,16 @@
+[package]
+name = "mem"
+version = "0.1.0"
+authors = ["steve"]
+edition = "2018"
+
+[profile.release]
+lto=true
+opt-level = 3
+#panic = 'abort'
+debug = false
+debug-assertions = false
+target-cpus='native'
+
+
+[dependencies]
