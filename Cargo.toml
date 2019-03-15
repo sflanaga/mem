@@ -14,4 +14,8 @@ target-cpus='native'
 
 
 [dependencies]
+log = "0.4.6"
+env_logger = "0.6.1"
+chrono = "0.4.6"
+
 
