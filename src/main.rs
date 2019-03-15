@@ -76,7 +76,7 @@ fn ticker(sleep_interval_ms: u64, stat_iterations: Arc<AtomicUsize>, stat_passes
             let delta_count = (this_count - last_count)*8; // convert to usize to bytes
             if delta_count > 0 {
                 let raw = (delta_count as f64 * 1000.0) / elapsed_time.as_millis() as f64;
-                println!("updates {}/s {} {}, array passes", greek(raw), greek((this_count*8) as f64), stat_passes.fetch_add(0, Ordering::SeqCst));
+                println!("updates {}/s {}, {} array passes", greek(raw), greek((this_count*8) as f64), stat_passes.fetch_add(0, Ordering::SeqCst));
             }
             last_count = this_count;
         }
@@ -101,11 +101,14 @@ fn worker(update_interval_count: usize, mem_use: usize, stat_iterations: Arc<Ato
     let mut stat_update = 0;
     let mut pass_local = 0;
     loop {
-  //      alloc_f = Instant::now();
         let stat_update_iterval = update_interval_count;
         for i in 0..vec_size {
             let a_v = i * 1982usize;
             v[i] = a_v;
+            if v[i] != i * 1982usize {
+                eprintln!("bad value");
+                process::exit(1);
+            }
             stat_update += 1;
             if stat_update >= stat_update_iterval {
                 stat_iterations.fetch_add(stat_update, Ordering::SeqCst);
@@ -115,8 +118,6 @@ fn worker(update_interval_count: usize, mem_use: usize, stat_iterations: Arc<Ato
             }
         }
         pass_local += 1;
-//        let write_f = Instant::now();
-        // println!("wrote to all entries in {:?}  passes {}", (write_f - alloc_f), pass_local);
     }
 }
 
@@ -170,7 +171,7 @@ fn main() {
         i += 1;
     }
     let per_thread_mem = mem_use / thread_no;
-    println!("Running with {} threads each with {}B each", thread_no, greek(per_thread_mem as f64));
+    println!("Running with {} threads each with {}B each, total={}", thread_no, greek(per_thread_mem as f64), thread_no * per_thread_mem);
     let mut worker_handles = vec![];
     let iterations = Arc::new(AtomicUsize::new(0));
     let passes = Arc::new(AtomicUsize::new(0));

@@ -7,10 +7,11 @@ edition = "2018"
 [profile.release]
 lto=true
 opt-level = 3
-#panic = 'abort'
+panic = 'abort'
 debug = false
 debug-assertions = false
 target-cpus='native'
 
 
 [dependencies]
+
