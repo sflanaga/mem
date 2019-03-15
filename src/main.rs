@@ -87,7 +87,7 @@ fn ticker(sleep_interval_ms: u64, stat_iterations: Arc<AtomicUsize>, stat_passes
             let delta_count = (this_count - last_count) * 8; // convert to usize to bytes
             if delta_count > 0 {
                 let raw = (delta_count as f64 * 1000.0) / elapsed_time.as_millis() as f64;
-                error!("updates {}/s {}, {} array passes", greek(raw), greek((this_count * 8) as f64), stat_passes.fetch_add(0, Ordering::SeqCst));
+                info!("updates {}/s {}, {} array passes", greek(raw), greek((this_count * 8) as f64), stat_passes.fetch_add(0, Ordering::SeqCst));
             }
             last_count = this_count;
         }
@@ -103,10 +103,9 @@ fn exiter(lifetime_ms: u64) {
 fn worker(update_interval_count: usize, mem_use: usize, stat_iterations: Arc<AtomicUsize>, stat_passes: Arc<AtomicUsize>) {
     let start_f = Instant::now();
     let vec_size = mem_use / size_of::<usize>();
-    info!("allocating {}B in vec of usize[{}] = {} bytes", greek(mem_use as f64), vec_size, mem_use);
     let mut v = vec![0usize; vec_size];
     let mut alloc_f = Instant::now();
-    info!("allocated in {:?} usize[{}]", (alloc_f - start_f), vec_size);
+    info!("allocated in {:?} vec of usize[{}] = {} bytes", (alloc_f - start_f), vec_size, mem_use);
 
     let mut stat_update = 0;
     let mut pass_local = 0;
